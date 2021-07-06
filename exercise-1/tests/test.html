@@ -15,12 +15,12 @@
                 <li class="user">
                     <div class="user__content">
                         <img class="user__img" src="{{avatar}}" alt="avatar_{{name}}">
-                        <span class="name">{{name}}</span>
+                        <span class="name">{{first_name}} {{last_name}}</span>
                         <button data-id="{{id}}" class="button">Show more</button>
                     </div>
                     <div id="{{id}}" class="hidden">
                         <span>id: {{id}}</span>
-                        <span>created: {{createdAt}}</span>
+                        <span>email: {{email}}</span>
                     </div>
                 </li>
             {{/each}}

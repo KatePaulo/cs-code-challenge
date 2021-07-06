@@ -1,10 +1,10 @@
 async function getUsers(container) {
-  const url = 'https://5dc588200bbd050014fb8ae1.mockapi.io/assessment';
+  const url = 'https://reqres.in/api/users';
   try {
     let res = await fetch(url);
     return res.json();
   } catch (error) {
-      renderTemplate({error}, container);
+    renderTemplate({ error }, container);
   }
 }
 
@@ -31,9 +31,9 @@ function toggleDetails(event) {
 async function renderUsers() {
   const container = document.getElementById('container');
   container.addEventListener('click', toggleDetails);
-  let users = await getUsers(container);
-  if (!users) return;
-  renderTemplate(users, container);
+  let { data } = await getUsers(container);
+  if (!data) return;
+  renderTemplate(data, container);
 }
 
 renderUsers();

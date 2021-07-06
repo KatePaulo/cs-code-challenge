@@ -1,34 +1,38 @@
 async function getUsers() {
-  const url = 'https://5dc588200bbd050014fb8ae1.mockapi.io/assessment';
+  const url = 'https://reqres.in/api/users';
   const res = await fetch(url);
   return res.json();
 }
 
-QUnit.test('get not empty data in from mockapi', async assert => {
+QUnit.test('get not empty data from mockapi', async assert => {
   let temp;
   await getUsers().then(res => {
-    if (res) temp = res;
+    if (res.data) temp = res.data;
   });
   assert.true(temp.length > 0, true, 'Result');
 });
 
-QUnit.test('render correct data', async assert => {
+QUnit.test('render correct name', async assert => {
   let temp;
   const done = assert.async();
   await getUsers().then(res => {
-    if (res) temp = res;
+    if (res.data) temp = res.data;
     done();
   });
   const [card] = document.getElementsByClassName('user');
   const [name] = card.getElementsByClassName('name');
-  assert.equal(name.innerHTML, temp[0].name, 'Result');
+  assert.equal(
+    name.innerHTML,
+    `${temp[0].first_name} ${temp[0].last_name}`,
+    'Result'
+  );
 });
 
 QUnit.test('render show more button', async assert => {
   let temp;
   const done = assert.async();
   await getUsers().then(res => {
-    if (res) temp = res;
+    if (res.data) temp = res.data;
     done();
   });
   const [card] = document.getElementsByClassName('user');
