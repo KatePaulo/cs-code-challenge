@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test Suite</title>
+<link rel="stylesheet" href="https://code.jquery.com/qunit/qunit-2.16.0.css">
+
+<body>
+    <div id="qunit"></div>
+    <div id="qunit-fixture"></div>
+    <div id="container"></div>
+    <script src="https://code.jquery.com/qunit/qunit-2.16.0.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/handlebars@latest/dist/handlebars.js"></script>
+    <script id="cards" type="text/x-handlebars-template">
+        <ul class="list">
+            {{#each this}}
+                <li class="user">
+                    <div class="user__content">
+                        <img class="user__img" src="{{avatar}}" alt="avatar_{{name}}">
+                        <span class="name">{{name}}</span>
+                        <button data-id="{{id}}" class="button">Show more</button>
+                    </div>
+                    <div id="{{id}}" class="hidden">
+                        <span>id: {{id}}</span>
+                        <span>created: {{createdAt}}</span>
+                    </div>
+                </li>
+            {{/each}}
+        </ul>
+    </script>
+    <script src="../js/index.js"></script>
+    <script src="test.js"></script>
+</body>

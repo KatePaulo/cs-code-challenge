@@ -1,92 +1,138 @@
-var taskInput = document.getElementById("new-task");
-var addButton = document.getElementsByTagName("button")[0];
-var incompleteTasksHolder = document.getElementById("incomplete-tasks");
-var completedTasksHolder = document.getElementById("completed-tasks");
+const defaultData = [
+  { task: 'Pay Bills', completed: false, edit: false, id: '1' },
+  { task: 'Go Shopping', completed: false, edit: true, id: '2' },
+  { task: 'See the Doctor', completed: true, edit: false, id: '3' },
+];
+function createNewTaskElement({ task, completed, edit, id }) {
+  return `<li class='item ${edit ? 'edit' : ''} ${completed ? 'completed' : ''}' data-id='${id}' data-edit='${edit}'>
+    <input class='checkbox' type='checkbox' ${completed ? 'checked' : ''} data-action='toggle'>
+    <label class='label'>${task}</label>
+    <input class='text-input' type='text' value='${task}'>
+    <button class='button' data-action='editTask'>${edit ? 'Save' : 'Edit'}</button>
+    <button class='button delete' data-action='deleteTask'>Delete</button>
+  </li>`;
+}
+function getTasks() {
+  return JSON.parse(localStorage.getItem('todos'));
+}
 
-var createNewTaskElement = function(taskString, arr) {
-  listItem = document.createElement("li");
-  checkBox = document.createElement("input");
-  label = document.createElement("label");
-  editInput = document.createElement("input");
-  editButton = document.createElement("button");
-  deleteButton = document.createElement("button");
+function createTasks(tasks) {
+  return tasks.map(createNewTaskElement).join('');
+}
 
-  checkBox.type = "checkbox";
-  editInput.type = "text";
-  editButton.innerText = "Edit";
-  editButton.className = "edit";
-  deleteButton.innerText = "Delete";
-  deleteButton.className = "delete";
-  label.innerText = taskString;
+function insertTasks(elementId, arr) {
+  const container = document.getElementById(elementId);
+  container.innerHTML = createTasks(arr);
+}
 
-  listItem.appendChild(checkBox);
-  listItem.appendChild(label);
-  listItem.appendChild(editInput);
-  listItem.appendChild(editButton);
-  listItem.appendChild(deleteButton);
+function initTodoList(tasks) {
+  insertTasks('incomplete-tasks', tasks.filter(task => !task.completed));
+  insertTasks('completed-tasks', tasks.filter(task => task.completed));
+  localStorage.setItem('todos', JSON.stringify(tasks));
+}
 
-  return listItem;
-};
-
-var addTask = function () {
-  var listItemName = taskInput.value || "New Item"
-  listItem = createNewTaskElement(listItemName)
-  incompleteTasksHolder.appendChild(listItem)
-  bindTaskEvents(listItem, taskCompleted)
-  taskInput.value = "";
-};
-
-var editTask = function () {
-  var listItem = this.parentNode;
-  var editInput = listItem.querySelectorAll("input[type=text")[0];
-  var label = listItem.querySelector("label");
-  var button = listItem.getElementsByTagName("button")[0];
-
-  var containsClass = listItem.classList.contains("editMode");
-  if (containsClass) {
-      label.innerText = editInput.value
-      button.innerText = "Edit";
-  } else {
-     editInput.value = label.innerText
-     button.innerText = "Save";
+function updateLocalStorageTasks({ action, task, value }) {
+  let tasks = getTasks();
+  switch (action) {
+    case 'add':
+      tasks.push(task);
+      break;
+    case 'delete':
+      tasks = tasks.filter(item => item.id !== task.dataset.id);
+      break;
+    case 'toggle':
+      const taskToToggle = tasks.find(item => item.id === task.dataset.id);
+      taskToToggle.completed = !taskToToggle.completed;
+      break;
+    case 'edit':
+      const taskToEdit = tasks.find(item => item.id === task.dataset.id);
+      taskToEdit.edit = !taskToEdit.edit;
+      taskToEdit.task = value;
+      break;
+    default:
+      tasks;
   }
-  
-  listItem.classList.toggle("editMode");
-};
-
-var deleteTask = function (el) {
-  var listItem = this.parentNode;
-  var ul = listItem.parentNode;
-  ul.removeChild(listItem);
-};
-
-var taskCompleted = function (el) {
-  var listItem = this.parentNode;
-  completedTasksHolder.appendChild(listItem);
-  bindTaskEvents(listItem, taskIncomplete);
-};
-
-var taskIncomplete = function() {
-  var listItem = this.parentNode;
-  incompleteTasksHolder.appendChild(listItem);
-  bindTaskEvents(listItem, taskCompleted);
-};
-
-var bindTaskEvents = function(taskListItem, checkBoxEventHandler, cb) {
-  var checkBox = taskListItem.querySelectorAll("input[type=checkbox]")[0];
-  var editButton = taskListItem.querySelectorAll("button.edit")[0];
-  var deleteButton = taskListItem.querySelectorAll("button.delete")[0];
-  editButton.onclick = editTask;
-  deleteButton.onclick = deleteTask;
-  checkBox.onchange = checkBoxEventHandler;
-};
-
-addButton.addEventListener("click", addTask);
-
-for (var i = 0; i < incompleteTasksHolder.children.length; i++) {
-  bindTaskEvents(incompleteTasksHolder.children[i], taskCompleted);
+  localStorage.setItem('todos', JSON.stringify(tasks));
 }
 
-for (var i = 0; i < completedTasksHolder.children.length; i++) {
-  bindTaskEvents(completedTasksHolder.children[i], taskIncomplete);
+function add() {
+  const taskInput = document.getElementById('new-task');
+  const listItemName = taskInput.value;
+  if (!listItemName.length) return;
+
+  const listItem = {
+    task: listItemName,
+    completed: false,
+    edit: false,
+    id: `${new Date().toJSON()}${listItemName}`,
+  };
+  updateLocalStorageTasks({ action: 'add', task: listItem });
+  const container = document.getElementById('incomplete-tasks');
+  container.appendChild(createElement(createNewTaskElement(listItem)));
+  taskInput.value = '';
 }
+
+function deleteTask({ parentNode }) {
+  updateLocalStorageTasks({ action: 'delete', task: parentNode });
+  const ul = parentNode.parentNode;
+  ul.removeChild(parentNode);
+}
+
+function toggle({ parentNode, target }) {
+  updateLocalStorageTasks({ action: 'toggle', task: parentNode });
+
+  const ul = parentNode.parentNode;
+  ul.removeChild(parentNode);
+  parentNode.classList.toggle('completed');
+  const container = document.getElementById(
+    target.checked ? 'completed-tasks' : 'incomplete-tasks'
+  );
+  container.appendChild(parentNode);
+}
+
+function editTask({ parentNode, target }) {
+  const [editInput] = parentNode.getElementsByClassName('text-input');
+  const [label] = parentNode.getElementsByClassName('label');
+
+  parentNode.classList.toggle('edit');
+  const isEdit = parentNode.dataset.edit === 'false';
+  if (!isEdit) {
+    label.innerText = editInput.value;
+  } else {
+    editInput.value = label.innerText;
+  }
+  target.innerText = isEdit ? 'Save' : 'Edit';
+  parentNode.dataset.edit = isEdit;
+  updateLocalStorageTasks({
+    action: 'edit',
+    task: parentNode,
+    value: editInput.value,
+  });
+}
+
+function handleActions(event, actions) {
+  const action = event.target.dataset.action;
+  if (action) {
+    actions[action]({
+      parentNode: event.target.parentNode,
+      target: event.target,
+    });
+  }
+}
+
+function app() {
+  const container = document.getElementById('container');
+  if (!container) return;
+  const tasks = getTasks() || defaultData;
+
+  initTodoList(tasks);
+  const actions = {
+    add,
+    toggle,
+    editTask,
+    deleteTask,
+  };
+  container.addEventListener('click', event => handleActions(event, actions));
+}
+
+app();

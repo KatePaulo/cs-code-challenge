@@ -1,0 +1,111 @@
+@import url("https://fonts.googleapis.com/css2?family=Lato&display=swap");
+body {
+  color: #333333;
+  font-family: Lato, sans-serif;
+}
+
+.container {
+  display: block;
+  max-width: 375px;
+  min-width: 320px;
+  margin: 100px auto 0;
+}
+
+.title {
+  font-weight: 700;
+  font-size: 15px;
+  border-bottom: 2px solid #333333;
+  padding: 30px 0 10px;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.button {
+  background: none;
+  border: none;
+  color: #888888;
+  font-size: 15px;
+  width: 60px;
+  margin: 10px 0 0;
+  cursor: pointer;
+  outline: #eeeeee;
+}
+.button:hover {
+  color: #333333;
+}
+.button.delete:hover {
+  color: #cf2323;
+}
+.button.add:hover {
+  color: #0fc57c;
+}
+
+.list {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+.list .item {
+  display: flex;
+  align-items: center;
+  padding: 20px 0;
+  border-bottom: 1px solid #eeeeee;
+}
+.list .item .text-input {
+  display: none;
+}
+.list .item.completed .label {
+  text-decoration: line-through;
+  color: #888888;
+}
+.list .item.edit .label {
+  display: none;
+}
+.list .item.edit .text-input {
+  display: block;
+  width: 226px;
+}
+
+.wrapper {
+  margin-top: 20px;
+}
+
+.text-input {
+  padding: 10px;
+  height: 18px;
+  font-size: 18px;
+  line-height: 18px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  color: #888888;
+  outline: #eeeeee;
+}
+.text-input:focus {
+  color: #333333;
+}
+.text-input.input-width {
+  width: 318px;
+}
+
+.checkbox {
+  margin: 0 10px;
+}
+
+.label {
+  font-size: 18px;
+  line-height: 40px;
+  width: 237px;
+}
+
+@media (max-width: 375px) {
+  .container {
+    margin-top: 0;
+  }
+}
+@media (min-width: 768px) {
+  .container {
+    max-width: 600px;
+  }
+}
+
+/*# sourceMappingURL=style.css.map */
